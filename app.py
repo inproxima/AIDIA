@@ -260,8 +260,9 @@ if docx_files is not None:
             
             for docx_files in os.listdir(tempDir):
                 filepath = os.path.join(tempDir, docx_files)
-                #mime_type, _ = mimetypes.guess_type(filepath)
-                mime_type = filetype.guess(filepath)
+                mime_type, _ = mimetypes.guess_type(filepath)
+                #mime_type = filetype.guess(filepath)
+                file_extension = os.path.splitext(tempDir)[1]
 
             if mime_type == "application/vnd.openxmlformats-officedocument.wordprocessingml.document":
                 raw_text = read_docx(tempDir)
@@ -277,7 +278,7 @@ if docx_files is not None:
                 embeddings = construct_index(tempDir, api)
                 index = GPTSimpleVectorIndex.load_from_disk('index.json')
                 st.subheader("Indexing complete! :white_check_mark:")
-            elif mime_type == "application/pdf":
+            elif file_extension.lower() == ".pdf" or mime_type == "application/pdf":
                 raw_text = read_pdf(tempDir)
                 text_splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=0)
                 texts = text_splitter.split_text(raw_text)
