@@ -6,6 +6,7 @@ from streamlit_chat import message
 import streamlit_ext as ste
 from docx import Document
 from pypdf import PdfReader
+import filetype
 
 
 
@@ -185,7 +186,8 @@ def get_text(context, conversations):
         )
     return response.choices[0].message.content
 
-
+if 'api' not in st.session_state:
+    st.session_state.api = []
 
 
 #Begin streamlit page
@@ -231,6 +233,7 @@ tempDir = "tempDir/"
 if st.button("Check key"):
     if api is not None:
     #Delete any files in tempDir
+        st.session_state.api = api
         try:
             # Send a test request to the OpenAI API
             response = openai.Completion.create(
@@ -257,7 +260,8 @@ if docx_files is not None:
             
             for docx_files in os.listdir(tempDir):
                 filepath = os.path.join(tempDir, docx_files)
-                mime_type, _ = mimetypes.guess_type(filepath)
+                #mime_type, _ = mimetypes.guess_type(filepath)
+                mime_type = filetype.guess(filepath)
 
             if mime_type == "application/vnd.openxmlformats-officedocument.wordprocessingml.document":
                 raw_text = read_docx(tempDir)
